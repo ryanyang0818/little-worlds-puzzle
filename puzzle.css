@@ -1,6 +1,8 @@
 :root { --ink:#344a42; --muted:#738078; --accent:#467b66; --line:#e3e6dc; --paper:#f7f5ef; }
 * { box-sizing:border-box; }
 canvas,.piece { -webkit-user-drag:none; user-select:none; }
+#tray #pieceGrid { padding-right:48px; touch-action:pan-y; background:linear-gradient(to left,#e9eee4 0 40px,transparent 40px); }
+.tray-scroll-hint { position:absolute; right:12px; top:12px; writing-mode:vertical-rl; font-size:12px; color:#65765f; pointer-events:none; }
 body { margin:0; color:var(--ink); background:var(--paper); font-family:'Segoe UI','Microsoft JhengHei',sans-serif; }
 button,a { -webkit-tap-highlight-color:transparent; }
 button { font:inherit; color:inherit; cursor:pointer; border:0; transition:background .18s,box-shadow .18s,transform .18s; }
