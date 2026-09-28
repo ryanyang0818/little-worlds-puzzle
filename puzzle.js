@@ -509,7 +509,7 @@ function cancelDrag() {
 
 // 讓半透明小物跟著指標移動，觸控時稍微抬高以免被手指遮住。
 function positionDragGhost(event) {
-  const offset=event.pointerType==='touch' ? 65 : 28;
+  const offset=pieceDrag.touchOffset || 28;
   pieceDrag.ghost.style.left=`${event.clientX-50}px`;
   pieceDrag.ghost.style.top=`${event.clientY-offset-50}px`;
 }
@@ -557,7 +557,7 @@ function startPieceDrag(event) {
   ghost.height=source.height;
   ghost.getContext('2d').drawImage(source,0,0);
   document.body.append(ghost);
-  pieceDrag = { x:event.clientX,y:event.clientY,id:event.pointerId,button,ghost,moved:false,pieceId:button.dataset.piece };
+  pieceDrag = { x:event.clientX,y:event.clientY,id:event.pointerId,button,ghost,moved:false,pieceId:button.dataset.piece,touchOffset:event.pointerType==='touch' ? 65 : 0 };
   positionDragGhost(event);
 }
 
@@ -572,16 +572,17 @@ function movePieceDrag(event) {
   pieceDrag.moved ||= Math.hypot(event.clientX-pieceDrag.x,event.clientY-pieceDrag.y)>8;
   positionDragGhost(event);
   const rect=stage.getBoundingClientRect();
-  const inside=event.clientX>=rect.left && event.clientX<=rect.right && event.clientY>=rect.top && event.clientY<=rect.bottom;
+  const dropY=event.clientY-pieceDrag.touchOffset;
+  const inside=event.clientX>=rect.left && event.clientX<=rect.right && dropY>=rect.top && dropY<=rect.bottom;
   stage.classList.toggle('drop-target',inside);
-  feedback.textContent=inside ? '放開滑鼠，把這件小物放進灰色位置。' : '繼續拖到左側立體場景裡。';
+  feedback.textContent=inside ? '放開，把這件小物放進灰色位置。' : '繼續拖到立體場景裡。';
 }
 
 // 把從零件盤拖出的物件放在指標落下的位置。
 function endPieceDrag(event) {
   if (!pieceDrag || pieceDrag.id!==event.pointerId) return;
   pieceDrag.moved ||= Math.hypot(event.clientX-pieceDrag.x,event.clientY-pieceDrag.y)>8;
-  if (pieceDrag.moved) placeAt(event.clientX,event.clientY);
+  if (pieceDrag.moved) placeAt(event.clientX,event.clientY-pieceDrag.touchOffset);
   const placed=progress[levelId].includes(pieceDrag.pieceId);
   if (pieceDrag.moved && !placed) feedback.textContent='還沒找到家，小物先彈回格子裡。再試一次吧！';
   finishPieceDrag(placed);

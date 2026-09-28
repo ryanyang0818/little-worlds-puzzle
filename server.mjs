@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 const port = Number(process.env.PORT || 8765);
+const host = process.env.HOST || '127.0.0.1';
 const files = new Map([
   ['/', ['index.html', 'text/html']], ['/index.html', ['index.html', 'text/html']],
   ['/puzzle.css', ['puzzle.css', 'text/css']], ['/puzzle.js', ['puzzle.js', 'text/javascript']],
@@ -33,4 +34,4 @@ async function handleRequest(request, response) {
 function onListening() {
   console.log(`Little Worlds: http://127.0.0.1:${port}`);
 }
-http.createServer(handleRequest).listen(port, '127.0.0.1', onListening);
+http.createServer(handleRequest).listen(port, host, onListening);
